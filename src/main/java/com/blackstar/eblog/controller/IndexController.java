@@ -17,7 +17,7 @@ public class IndexController extends BaseController {
   public String index(){
 
     // 1分页信息，2分类 3用户 4置顶 5精选 6排序
-    IPage results = mPostService.paging(getPage(),null,null,null,null,"created");
+    IPage results = postService.paging(getPage(),null,null,null,null,"created");
 
     req.setAttribute("pageData",results);
     req.setAttribute("currentCategoryId",0);

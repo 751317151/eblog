@@ -30,13 +30,13 @@ public class PostController extends BaseController {
   @GetMapping("/post/{id:\\d*}")
   public String detail(@PathVariable(name = "id") Long id){
 
-    PostVo vo = mPostService.selectOnePost(new QueryWrapper<MPost>().eq("p.id", id));
+    PostVo vo = postService.selectOnePost(new QueryWrapper<MPost>().eq("p.id", id));
     Assert.notNull(vo, "文章已被删除");
 
-    mPostService.putViewCount(vo);
+    postService.putViewCount(vo);
 
     // 1分页，2文章id，3用户id，排序
-    IPage<CommentVo> results = mCommentService.paging(getPage(), vo.getId(), null, "created");
+    IPage<CommentVo> results = commentService.paging(getPage(), vo.getId(), null, "created");
 
     req.setAttribute("currentCategoryId", vo.getCategoryId());
     req.setAttribute("post", vo);
