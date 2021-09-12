@@ -97,9 +97,9 @@ public class AuthController extends BaseController {
 
     String capthca = (String) req.getSession().getAttribute(KAPTCHA_SESSION_KEY);
     System.out.println(capthca);
-    if(vercode == null || !vercode.equalsIgnoreCase(capthca)) {
-      return Result.fail("验证码输入不正确");
-    }
+//    if(vercode == null || !vercode.equalsIgnoreCase(capthca)) {
+//      return Result.fail("验证码输入不正确");
+//    }
 
     // 完成注册
     Result result = userService.register(user);

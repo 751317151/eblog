@@ -1,6 +1,6 @@
 <#include "/inc/layout.ftl" />
 
-<@layout"博客分类">
+<@layout"博客详情">
 
 <#include "/inc/header-panel.ftl" />
 
@@ -16,14 +16,22 @@
           <#if post.level gt 0><span class="layui-badge layui-bg-black">置顶</span></#if>
           <#if post.recommend><span class="layui-badge layui-bg-red">精帖</span></#if>
           
-          <div class="fly-admin-box" data-id="123">
-            <span class="layui-btn layui-btn-xs jie-admin" type="del">删除</span>
-            
-            <span class="layui-btn layui-btn-xs jie-admin" type="set" field="stick" rank="1">置顶</span> 
-            <!-- <span class="layui-btn layui-btn-xs jie-admin" type="set" field="stick" rank="0" style="background-color:#ccc;">取消置顶</span> -->
-            
-            <span class="layui-btn layui-btn-xs jie-admin" type="set" field="status" rank="1">加精</span> 
-            <!-- <span class="layui-btn layui-btn-xs jie-admin" type="set" field="status" rank="0" style="background-color:#ccc;">取消加精</span> -->
+          <div class="fly-admin-box" data-id="${post.id}">
+            <#if post.userId == profile.id>
+            <#--发布者删除-->
+              <span class="layui-btn layui-btn-xs jie-admin" type="del">删除</span>
+            </#if>
+
+            <@shiro.hasRole name="admin">
+            <#--管理员操作-->
+              <span class="layui-btn layui-btn-xs jie-admin" type="set" field="delete" rank="1">删除</span>
+
+              <#if post.level == 0><span class="layui-btn layui-btn-xs jie-admin" type="set" field="stick" rank="1">置顶</span></#if>
+              <#if post.level gt 0><span class="layui-btn layui-btn-xs jie-admin" type="set" field="stick" rank="0" style="background-color:#ccc;">取消置顶</span></#if>
+
+              <#if !post.recommend><span class="layui-btn layui-btn-xs jie-admin" type="set" field="status" rank="1">加精</span></#if>
+              <#if post.recommend><span class="layui-btn layui-btn-xs jie-admin" type="set" field="status" rank="0" style="background-color:#ccc;">取消加精</span></#if>
+            </@shiro.hasRole>
           </div>
           <span class="fly-list-nums"> 
             <a href="#comment"><i class="iconfont" title="回答">&#xe60c;</i> ${post.commentCount}</a>
@@ -41,7 +49,7 @@
             <span>${timeAgo(post.created)}</span>
           </div>
           <div class="detail-hits" id="LAY_jieAdmin" data-id="${post.id}">
-            <span class="layui-btn layui-btn-xs jie-admin" type="edit"><a href="add.html">编辑此贴</a></span>
+            <#if profile.id == post.userId><span class="layui-btn layui-btn-xs jie-admin" type="edit"><a href="/post/edit?id=${post.id}">编辑此贴</a></span></#if>
           </div>
         </div>
         <div class="detail-body photos">
@@ -67,8 +75,11 @@
                     <cite>${comment.authorName}</cite>
                   </a>
 
-                  <#if comment.user_id == post.user_id>
+                  <#if (comment.userId)! == (post.userId)!>
                     <span>(楼主)</span>
+                  </#if>
+                  <#if (comment.userId)! == (profile.id)!>
+                    <span>(我)</span>
                   </#if>
                 </div>
 

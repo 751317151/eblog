@@ -100,5 +100,4 @@ public class MUser extends BaseEntity {
      */
     private Date lasted;
 
-
 }

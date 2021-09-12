@@ -1,11 +1,10 @@
 package com.blackstar.eblog.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.blackstar.eblog.service.MCommentService;
-import com.blackstar.eblog.service.MPostService;
-import com.blackstar.eblog.service.MUserService;
+import com.blackstar.eblog.service.*;
 import com.blackstar.eblog.shiro.AccountProfile;
 import org.apache.shiro.SecurityUtils;
+import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.ServletRequestUtils;
 
@@ -27,7 +26,25 @@ public class BaseController {
   MCommentService commentService;
 
   @Autowired
+  MUserMessageService messageService;
+
+  @Autowired
+  MUserCollectionService userCollectionService;
+
+  @Autowired
+  MCategoryService categoryService;
+
+  @Autowired
   MUserService userService;
+
+  @Autowired
+  WsService wsService;
+
+  @Autowired
+  SearchService searchService;
+
+  @Autowired
+  AmqpTemplate amqpTemplate;
 
   public Page getPage(){
     int pn = ServletRequestUtils.getIntParameter(req,"pn",1);

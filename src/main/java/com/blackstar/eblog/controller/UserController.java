@@ -1,24 +1,28 @@
 package com.blackstar.eblog.controller;
 
+import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.SecureUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.blackstar.eblog.common.lang.Result;
 import com.blackstar.eblog.entity.MPost;
 import com.blackstar.eblog.entity.MUser;
+import com.blackstar.eblog.entity.MUserMessage;
 import com.blackstar.eblog.shiro.AccountProfile;
 import com.blackstar.eblog.util.UploadUtil;
+import com.blackstar.eblog.vo.CollectionVo;
+import com.blackstar.eblog.vo.UserMessageVo;
 import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author huah
@@ -121,5 +125,80 @@ public class UserController extends BaseController {
     userService.updateById(user);
 
     return Result.success().action("/user/set#pass");
+  }
+
+  @GetMapping("/user/index")
+  public String index() {
+    return "/user/index";
+  }
+
+  @ResponseBody
+  @GetMapping("/user/public")
+  public Result userPublic() {
+    IPage page = postService.page(getPage(), new QueryWrapper<MPost>()
+        .eq("user_id", getProfileId())
+        .orderByDesc("created"));
+
+    return Result.success(page);
+  }
+
+  @ResponseBody
+  @GetMapping("/user/collection")
+  public Result collection() {
+//    IPage page = postService.page(getPage(), new QueryWrapper<MPost>()
+//        .inSql("id", "SELECT post_id FROM m_user_collection where user_id = " + getProfileId())
+//    );
+
+    // 1分页，2用户id，排序
+    IPage<CollectionVo> results = userCollectionService.paging(getPage(),getProfileId(),"c.created");
+
+    return Result.success(results);
+  }
+
+  @GetMapping("/user/message")
+  public String message() {
+
+    IPage<UserMessageVo> page = messageService.paging(getPage(), new QueryWrapper<MUserMessage>()
+        .eq("to_user_id", getProfileId())
+        .orderByDesc("created")
+    );
+
+    // 把消息改成已读状态
+    List<Long> ids = new ArrayList<>();
+    for(UserMessageVo messageVo : page.getRecords()) {
+      if(messageVo.getStatus() == 0) {
+        ids.add(messageVo.getId());
+      }
+    }
+    // 批量修改成已读
+    messageService.updateToReaded(ids);
+
+    req.setAttribute("pageData", page);
+
+    return "/user/message";
+  }
+
+  @ResponseBody
+  @PostMapping("/message/remove/")
+  public Result msgRemove(Long id,
+                          @RequestParam(defaultValue = "false") Boolean all) {
+
+    boolean remove = messageService.remove(new QueryWrapper<MUserMessage>()
+        .eq("to_user_id", getProfileId())
+        .eq(!all, "id", id));
+
+    return remove ? Result.success(null) : Result.fail("删除失败");
+  }
+
+  @ResponseBody
+  @RequestMapping("/message/nums/")
+  public Map msgNums() {
+
+    int count = messageService.count(new QueryWrapper<MUserMessage>()
+        .eq("to_user_id", getProfileId())
+        .eq("status", "0")
+    );
+    return MapUtil.builder("status", 0)
+        .put("count", count).build();
   }
 }

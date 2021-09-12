@@ -37,6 +37,7 @@ public class MUserServiceImpl extends ServiceImpl<MUserMapper, MUser> implements
 
     // 安全注册
     MUser temp = new MUser();
+    temp.setId(7l);
     temp.setUsername(user.getUsername());
     temp.setPassword(SecureUtil.md5(user.getPassword()));
     temp.setEmail(user.getEmail());

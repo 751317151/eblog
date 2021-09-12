@@ -55,8 +55,8 @@ public class ShiroConfig {
     hashMap.put("/user/index", "auth");
     hashMap.put("/user/public", "auth");
     hashMap.put("/user/collection", "auth");
-    hashMap.put("/user/mess", "auth");
-    hashMap.put("/msg/remove/", "auth");
+    hashMap.put("/user/message", "auth");
+    hashMap.put("/message/remove/", "auth");
     hashMap.put("/message/nums/", "auth");
 
     hashMap.put("/collection/remove/", "auth");

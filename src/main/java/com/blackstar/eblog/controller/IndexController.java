@@ -23,4 +23,14 @@ public class IndexController extends BaseController {
     req.setAttribute("currentCategoryId",0);
     return "index";
   }
+
+  @RequestMapping("/search")
+  public String search(String q) {
+
+    IPage pageData = searchService.search(getPage(), q);
+
+    req.setAttribute("q", q);
+    req.setAttribute("pageData", pageData);
+    return "search";
+  }
 }
