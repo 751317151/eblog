@@ -31,6 +31,7 @@ public class IndexController extends BaseController {
 
     req.setAttribute("q", q);
     req.setAttribute("pageData", pageData);
+    req.setAttribute("currentCategoryId",-1);
     return "search";
   }
 }
