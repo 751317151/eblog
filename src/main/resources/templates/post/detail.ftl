@@ -17,7 +17,7 @@
           <#if post.recommend><span class="layui-badge layui-bg-red">精帖</span></#if>
           
           <div class="fly-admin-box" data-id="${post.id}">
-            <#if post.userId == profile.id>
+            <#if (post.userId)?? == (profile.id)??>
             <#--发布者删除-->
               <span class="layui-btn layui-btn-xs jie-admin" type="del">删除</span>
             </#if>
@@ -49,7 +49,7 @@
             <span>${timeAgo(post.created)}</span>
           </div>
           <div class="detail-hits" id="LAY_jieAdmin" data-id="${post.id}">
-            <#if profile.id == post.userId><span class="layui-btn layui-btn-xs jie-admin" type="edit"><a href="/post/edit?id=${post.id}">编辑此贴</a></span></#if>
+            <#if (profile.id)?? == (post.userId)??><span class="layui-btn layui-btn-xs jie-admin" type="edit"><a href="/post/edit?id=${post.id}">编辑此贴</a></span></#if>
           </div>
         </div>
         <div class="detail-body photos">

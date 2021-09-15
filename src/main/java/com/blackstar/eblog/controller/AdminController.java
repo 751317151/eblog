@@ -59,11 +59,8 @@ public class AdminController extends BaseController {
 
     for (int i = 1; i < 1000; i ++) {
       page.setCurrent(i);
-
       IPage<PostVo> paging = postService.paging(page, null, null, null, null, null);
-
       int num = searchService.initEsData(paging.getRecords());
-
       total += num;
 
       // 当一页查不出10000条的时候，说明是最后一页了

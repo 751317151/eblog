@@ -11,8 +11,7 @@ import com.blackstar.eblog.service.MPostService;
 import com.blackstar.eblog.service.SearchService;
 import com.blackstar.eblog.vo.PostVo;
 import lombok.extern.slf4j.Slf4j;
-import org.elasticsearch.index.query.MultiMatchQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -21,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+
 /**
  * @author huah
  * @since 2021年09月12日
@@ -49,7 +49,11 @@ public class SearchServiceImpl implements SearchService {
     MultiMatchQueryBuilder multiMatchQueryBuilder = QueryBuilders.multiMatchQuery(keyword,
         "title", "authorName", "categoryName");
 
-    org.springframework.data.domain.Page<PostDocment> docments = postRepository.search(multiMatchQueryBuilder, pageable);
+    QueryBuilder queryBuilder1 = QueryBuilders.wildcardQuery("title", "*"+keyword+"*");
+    QueryBuilder queryBuilder2 = QueryBuilders.wildcardQuery("authorName", "*"+keyword+"*");
+    QueryBuilder queryBuilder3 = QueryBuilders.wildcardQuery("categoryName", "*"+keyword+"*");
+    QueryBuilder builder = QueryBuilders.boolQuery().should(queryBuilder1).should(queryBuilder2).should(queryBuilder3);
+    org.springframework.data.domain.Page<PostDocment> docments = postRepository.search(builder, pageable);
 
     // 结果信息 jpa的pageData转成mybatis plus的pageData
     IPage pageData = new Page(page.getCurrent(), page.getSize(), docments.getTotalElements());
