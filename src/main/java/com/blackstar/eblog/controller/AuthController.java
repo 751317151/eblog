@@ -59,7 +59,7 @@ public class AuthController extends BaseController {
       return Result.fail("邮箱或密码不能为空");
     }
 
-    UsernamePasswordToken token = new UsernamePasswordToken(email, SecureUtil.md5(password));
+    UsernamePasswordToken token = new UsernamePasswordToken(email, SecureUtil.md5(password),true);
     try {
       SecurityUtils.getSubject().login(token);
     } catch (AuthenticationException e) {
